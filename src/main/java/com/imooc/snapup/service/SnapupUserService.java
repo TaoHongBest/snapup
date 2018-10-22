@@ -8,7 +8,7 @@ import com.imooc.snapup.redis.RedisService;
 import com.imooc.snapup.redis.SnapupUserKey;
 import com.imooc.snapup.result.CodeMsg;
 import com.imooc.snapup.util.MD5Util;
-//import com.imooc.snapup.util.UUIDUtil;
+import com.imooc.snapup.util.UUIDUtil;
 import com.imooc.snapup.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class SnapupUserService {
 
-//    private static final String COOKIE_NAME_TOKEN = "token";
+    private static final String COOKIE_NAME_TOKEN = "token";
 
     @Autowired
     SnapupUserDao snapupUserDao;
@@ -34,7 +34,7 @@ public class SnapupUserService {
         return snapupUserDao.getById(id);
     }
 
-    public boolean login(LoginVo loginVo) {
+    public boolean login(HttpServletResponse response, LoginVo loginVo) {
         if (loginVo == null) {
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
@@ -52,13 +52,13 @@ public class SnapupUserService {
         if (!calcPass.equals(dbPass)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
-        // Generate cookie
-//        String token = UUIDUtil.uuid();
-//        redisService.set(SnapupUserKey.token, token, user);
-//        Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
-//        cookie.setMaxAge(SnapupUserKey.token.expireSeconds());
-//        cookie.setPath("/");
-//        response.addCookie(cookie);
+//         Generate cookie
+        String token = UUIDUtil.uuid();
+        redisService.set(SnapupUserKey.token, token, user);
+        Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
+        cookie.setMaxAge(SnapupUserKey.token.expireSeconds());
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return true;
     }
 }
