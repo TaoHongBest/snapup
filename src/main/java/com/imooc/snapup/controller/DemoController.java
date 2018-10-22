@@ -66,7 +66,6 @@ public class DemoController {
         return Result.success(true);
     }
 
-
     @RequestMapping("/thymeleaf")
     public String thymeleaf(Model model) {
         model.addAttribute("name", "taohong");

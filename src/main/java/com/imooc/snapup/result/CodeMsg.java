@@ -10,6 +10,7 @@ public class CodeMsg {
     // General errors
     public static CodeMsg SUCCESS = new CodeMsg(0, "success");
     public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "server error");
+    public static CodeMsg BIND_ERROR = new CodeMsg(500101, "parameter validation error: %s");
     // Login errors 5002XX
     public static CodeMsg PASSWORD_EMPTY = new CodeMsg(500211, "password cannot be empty");
     public static CodeMsg MOBILE_EMPTY = new CodeMsg(500212, "phone number cannot be empty");
@@ -26,6 +27,12 @@ public class CodeMsg {
     private CodeMsg(int code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    public CodeMsg fillArgs(Object... args) {
+        int code = this.code;
+        String message = String.format(this.msg, args);
+        return new CodeMsg(code, message);
     }
 
     public int getCode() {

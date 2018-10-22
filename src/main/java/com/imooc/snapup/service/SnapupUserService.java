@@ -2,11 +2,19 @@ package com.imooc.snapup.service;
 
 import com.imooc.snapup.dao.SnapupUserDao;
 import com.imooc.snapup.domain.SnapupUser;
+import com.imooc.snapup.exception.GlobalException;
+import com.imooc.snapup.exception.GlobalExceptionHandler;
+import com.imooc.snapup.redis.RedisService;
+import com.imooc.snapup.redis.SnapupUserKey;
 import com.imooc.snapup.result.CodeMsg;
 import com.imooc.snapup.util.MD5Util;
+//import com.imooc.snapup.util.UUIDUtil;
 import com.imooc.snapup.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author taohong on 22/10/2018
@@ -14,31 +22,43 @@ import org.springframework.stereotype.Service;
 @Service
 public class SnapupUserService {
 
+//    private static final String COOKIE_NAME_TOKEN = "token";
+
     @Autowired
     SnapupUserDao snapupUserDao;
+
+    @Autowired
+    RedisService redisService;
 
     public SnapupUser getById(long id) {
         return snapupUserDao.getById(id);
     }
 
-    public CodeMsg login(LoginVo loginVo) {
+    public boolean login(LoginVo loginVo) {
         if (loginVo == null) {
-            return CodeMsg.SERVER_ERROR;
+            throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
         String mobile = loginVo.getMobile();
         String formPass = loginVo.getPassword();
         // Check whether phone number exists
         SnapupUser user = getById(Long.parseLong(mobile));
         if (user == null) {
-            return CodeMsg.MOBILE_NOT_EXIST;
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
         }
-        // Check password
+        // Validate password
         String dbPass = user.getPassword();
         String saltDB = user.getSalt();
         String calcPass = MD5Util.formPassToDBPass(formPass, saltDB);
         if (!calcPass.equals(dbPass)) {
-            return CodeMsg.PASSWORD_ERROR;
+            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
-        return CodeMsg.SUCCESS;
+        // Generate cookie
+//        String token = UUIDUtil.uuid();
+//        redisService.set(SnapupUserKey.token, token, user);
+//        Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
+//        cookie.setMaxAge(SnapupUserKey.token.expireSeconds());
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
+        return true;
     }
 }

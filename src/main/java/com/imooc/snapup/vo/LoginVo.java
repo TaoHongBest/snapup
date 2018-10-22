@@ -1,10 +1,19 @@
 package com.imooc.snapup.vo;
 
+import com.imooc.snapup.validator.IsMobile;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * @author taohong on 22/10/2018
  */
 public class LoginVo {
+    @NotNull
+    @IsMobile
     private String mobile;
+    @NotNull
+    @Length(min=32)
     private String password;
 
     public String getMobile() {
