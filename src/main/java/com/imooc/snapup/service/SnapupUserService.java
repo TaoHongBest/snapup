@@ -42,7 +42,7 @@ public class SnapupUserService {
         SnapupUser user = redisService.get(SnapupUserKey.token, token, SnapupUser.class);
         // Extend period of validity
         if (user != null) {
-            addCookie(response, user);
+            addCookie(response, token, user);
         }
         return user;
     }
@@ -65,12 +65,13 @@ public class SnapupUserService {
         if (!calcPass.equals(dbPass)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
-
+        // Generate cookie
+        String token = UUIDUtil.uuid();
+        addCookie(response, token, user);
         return true;
     }
 
-    private void addCookie(HttpServletResponse response, SnapupUser user) {
-        String token = UUIDUtil.uuid();
+    private void addCookie(HttpServletResponse response, String token, SnapupUser user) {
         redisService.set(SnapupUserKey.token, token, user);
         Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
         cookie.setMaxAge(SnapupUserKey.token.expireSeconds());
