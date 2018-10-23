@@ -4,9 +4,11 @@ package com.imooc.snapup.redis;
  * @author taohong on 18/10/2018
  */
 public class SnapupUserKey extends BasePrefix {
-    private SnapupUserKey(String prefix) {
-        super(prefix);
+    public static final int TOKEN_EXPIRE = 3600 * 24 * 2;
+
+    private SnapupUserKey(int expireSeconds, String prefix) {
+        super(expireSeconds, prefix);
     }
 
-    public static SnapupUserKey token = new SnapupUserKey("tk");
+    public static SnapupUserKey token = new SnapupUserKey(TOKEN_EXPIRE, "tk");
 }

@@ -12,6 +12,7 @@ import com.imooc.snapup.util.UUIDUtil;
 import com.imooc.snapup.vo.LoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @Service
 public class SnapupUserService {
 
-    private static final String COOKIE_NAME_TOKEN = "token";
+    public static final String COOKIE_NAME_TOKEN = "token";
 
     @Autowired
     SnapupUserDao snapupUserDao;
@@ -32,6 +33,13 @@ public class SnapupUserService {
 
     public SnapupUser getById(long id) {
         return snapupUserDao.getById(id);
+    }
+
+    public SnapupUser getByToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+        return redisService.get(SnapupUserKey.token, token, SnapupUser.class);
     }
 
     public boolean login(HttpServletResponse response, LoginVo loginVo) {
@@ -61,4 +69,6 @@ public class SnapupUserService {
         response.addCookie(cookie);
         return true;
     }
+
+
 }
