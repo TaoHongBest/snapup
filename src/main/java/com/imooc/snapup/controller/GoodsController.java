@@ -4,7 +4,9 @@ import com.imooc.snapup.domain.SnapupUser;
 import com.imooc.snapup.redis.RedisService;
 import com.imooc.snapup.redis.SnapupUserKey;
 import com.imooc.snapup.result.Result;
+import com.imooc.snapup.service.GoodsService;
 import com.imooc.snapup.service.SnapupUserService;
+import com.imooc.snapup.vo.GoodsVo;
 import com.imooc.snapup.vo.LoginVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author taohong on 09/10/2018
@@ -33,9 +36,15 @@ public class GoodsController {
     @Autowired
     RedisService redisService;
 
+    @Autowired
+    GoodsService goodsService;
+
     @RequestMapping("/to_list")
     public String list(Model model, SnapupUser user) {
         model.addAttribute("user", user);
+        // Query goods list
+        List<GoodsVo> goodsList = goodsService.listGoodsVo();
+        model.addAttribute("goodsList", goodsList);
         return "goods_list";
     }
 }
