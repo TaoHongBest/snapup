@@ -35,11 +35,16 @@ public class SnapupUserService {
         return snapupUserDao.getById(id);
     }
 
-    public SnapupUser getByToken(String token) {
+    public SnapupUser getByToken(HttpServletResponse response, String token) {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        return redisService.get(SnapupUserKey.token, token, SnapupUser.class);
+        SnapupUser user = redisService.get(SnapupUserKey.token, token, SnapupUser.class);
+        // Extend period of validity
+        if (user != null) {
+            addCookie(response, user);
+        }
+        return user;
     }
 
     public boolean login(HttpServletResponse response, LoginVo loginVo) {
@@ -60,14 +65,17 @@ public class SnapupUserService {
         if (!calcPass.equals(dbPass)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
-//         Generate cookie
+
+        return true;
+    }
+
+    private void addCookie(HttpServletResponse response, SnapupUser user) {
         String token = UUIDUtil.uuid();
         redisService.set(SnapupUserKey.token, token, user);
         Cookie cookie = new Cookie(COOKIE_NAME_TOKEN, token);
         cookie.setMaxAge(SnapupUserKey.token.expireSeconds());
         cookie.setPath("/");
         response.addCookie(cookie);
-        return true;
     }
 
 

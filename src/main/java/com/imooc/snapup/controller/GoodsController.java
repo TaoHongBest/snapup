@@ -34,21 +34,8 @@ public class GoodsController {
     RedisService redisService;
 
     @RequestMapping("/to_list")
-    public String toList(Model model,
-                         @CookieValue(value = SnapupUserService.COOKIE_NAME_TOKEN, required = false) String cookieToken,
-                         @RequestParam(value = SnapupUserService.COOKIE_NAME_TOKEN, required = false) String paramToken) {
-        if (StringUtils.isEmpty(cookieToken) && StringUtils.isEmpty(paramToken)) {
-            return "login";
-        }
-        String token = StringUtils.isEmpty(paramToken) ? cookieToken : paramToken;
-        SnapupUser user = userService.getByToken(token);
+    public String list(Model model, SnapupUser user) {
         model.addAttribute("user", user);
         return "goods_list";
     }
-
-//    @RequestMapping("/to_list")
-//    public String toList(Model model) {
-//        model.addAttribute("user", new SnapupUser());
-//        return "goods_list";
-//    }
 }
