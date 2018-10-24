@@ -28,6 +28,10 @@ public class GoodsController {
     @Autowired
     GoodsService goodsService;
 
+    /**
+     * jMeter 300 QPS
+     * 5000 * 10
+     */
     @RequestMapping("/to_list")
     public String list(Model model, SnapupUser user) {
         model.addAttribute("user", user);
