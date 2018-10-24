@@ -16,6 +16,7 @@ public class RedisService {
 
     /**
      * 获取当个对象
+     *
      * @param prefix
      * @param key
      * @param clazz
@@ -38,6 +39,7 @@ public class RedisService {
 
     /**
      * 设置对象
+     *
      * @param prefix
      * @param key
      * @param value
@@ -49,7 +51,7 @@ public class RedisService {
         try {
             jedis = jedisPool.getResource();
             String str = beanToString(value);
-            if (str == null | str.length() <= 0) {
+            if (str == null || str.length() <= 0) {
                 return false;
             }
             // Generate real key
@@ -68,6 +70,7 @@ public class RedisService {
 
     /**
      * 判断key是否存在
+     *
      * @param prefix
      * @param key
      * @param <T>
@@ -87,6 +90,7 @@ public class RedisService {
 
     /**
      * 增加值
+     *
      * @param prefix
      * @param key
      * @param <T>
@@ -106,6 +110,7 @@ public class RedisService {
 
     /**
      * 减少值
+     *
      * @param prefix
      * @param key
      * @param <T>
