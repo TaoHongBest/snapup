@@ -23,6 +23,9 @@ public class CodeMsg {
     // Order errors 5004XX
 
     // Snapup errors 5005XX
+    public static CodeMsg SNAPUP_OVER = new CodeMsg(500500, "snap-up is over");
+    public static CodeMsg REPEAT_SNAPUP = new CodeMsg(500501, "cannot repeat snap up one item");
+
 
     private CodeMsg(int code, String msg) {
         this.code = code;
