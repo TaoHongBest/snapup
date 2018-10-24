@@ -2,25 +2,14 @@ package com.imooc.snapup.controller;
 
 import com.imooc.snapup.domain.SnapupUser;
 import com.imooc.snapup.redis.RedisService;
-import com.imooc.snapup.redis.SnapupUserKey;
-import com.imooc.snapup.result.Result;
 import com.imooc.snapup.service.GoodsService;
 import com.imooc.snapup.service.SnapupUserService;
 import com.imooc.snapup.vo.GoodsVo;
-import com.imooc.snapup.vo.LoginVo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -46,5 +35,35 @@ public class GoodsController {
         List<GoodsVo> goodsList = goodsService.listGoodsVo();
         model.addAttribute("goodsList", goodsList);
         return "goods_list";
+    }
+
+    @RequestMapping("/to_detail/{goodsId}")
+    public String detail(Model model, SnapupUser user,
+                         @PathVariable("goodsId") long goodsId) {
+        model.addAttribute("user", user);
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+        model.addAttribute("goods", goods);
+
+        long startAt = goods.getStartDate().getTime();
+        long endAt = goods.getEndDate().getTime();
+        long now = System.currentTimeMillis();
+
+        int snapupStatus = 0;
+        int remainSeconds = 0;
+        if (now < startAt) {// Snap-up has not started. Countdown
+            snapupStatus = 0;
+            remainSeconds = (int) (startAt - now) / 1000;
+        } else if (now > endAt) { // Snap-up has ended.
+            snapupStatus = 2;
+            remainSeconds = -1;
+        } else { // Snapping up!
+            snapupStatus = 1;
+            remainSeconds = 0;
+        }
+
+        model.addAttribute("snapupStatus", snapupStatus);
+        model.addAttribute("remainSeconds", remainSeconds);
+
+        return "goods__detail";
     }
 }

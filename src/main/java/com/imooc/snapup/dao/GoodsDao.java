@@ -15,7 +15,12 @@ import java.util.List;
 @Mapper
 public interface GoodsDao {
 
-    @Select("select g.*, sg.stock_count, sg.start_date, sg.end_date, sg.snapup_price from snapup_goods sg left join goods g on sg.goods_id=g.id")
+    @Select("select g.*, sg.stock_count, sg.start_date, sg.end_date, sg.snapup_price " +
+            "from snapup_goods sg left join goods g on sg.goods_id=g.id")
     List<GoodsVo> listGoodsVo();
 
+    @Select("select g.*, sg.stock_count, sg.start_date, sg.end_date, sg.snapup_price " +
+            "from snapup_goods sg left join goods g on sg.goods_id=g.id " +
+            "where g.id=#{goodsId}")
+    GoodsVo getGoodsVoByGoodsId(@Param("goodsId") long goodsId);
 }
