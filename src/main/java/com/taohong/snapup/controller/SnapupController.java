@@ -41,6 +41,10 @@ public class SnapupController {
     @Autowired
     SnapupService snapupService;
 
+    /**
+     * 351 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (order created & no exception)
+     * 3000 * 10
+     */
     @RequestMapping("/do_snapup")
     public String list(Model model, SnapupUser user, @RequestParam("goodsId") long goodsId) {
         model.addAttribute("user", user);

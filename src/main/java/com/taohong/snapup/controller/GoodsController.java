@@ -29,8 +29,8 @@ public class GoodsController {
     GoodsService goodsService;
 
     /**
-     * jMeter 300 QPS
-     * 5000 * 10
+     * 288 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (no exception)
+     * 3000 * 10
      */
     @RequestMapping("/to_list")
     public String list(Model model, SnapupUser user) {
