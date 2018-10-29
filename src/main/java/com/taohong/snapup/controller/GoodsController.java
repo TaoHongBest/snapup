@@ -4,8 +4,10 @@ import com.taohong.snapup.domain.SnapupUser;
 import com.taohong.snapup.redis.GoodsKey;
 import com.taohong.snapup.redis.KeyPrefix;
 import com.taohong.snapup.redis.RedisService;
+import com.taohong.snapup.result.Result;
 import com.taohong.snapup.service.GoodsService;
 import com.taohong.snapup.service.SnapupUserService;
+import com.taohong.snapup.vo.GoodsDetailVo;
 import com.taohong.snapup.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -43,7 +45,12 @@ public class GoodsController {
     ApplicationContext applicationContext;
 
     /**
+     * BEFORE CACHING:
      * 288 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (no exception)
+     * 3000 * 10
+     * <p>
+     * AFTER CACHING:
+     * 527 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (no exception)
      * 3000 * 10
      */
     @RequestMapping(value = "/to_list", produces = "text/html")
@@ -51,15 +58,14 @@ public class GoodsController {
 //    @RequestMapping("/to_list")
     public String list(HttpServletRequest request, HttpServletResponse response, Model model, SnapupUser user) {
         model.addAttribute("user", user);
-        // Query goods list
-        List<GoodsVo> goodsList = goodsService.listGoodsVo();
-        model.addAttribute("goodsList", goodsList);
-//        return "goods_list";
-        String html = redisService.get(GoodsKey.getGoodsList, "", String.class);
         // Get cache
+        String html = redisService.get(GoodsKey.getGoodsList, "", String.class);
         if (!StringUtils.isEmpty(html)) {
             return html;
         }
+        List<GoodsVo> goodsList = goodsService.listGoodsVo();
+        model.addAttribute("goodsList", goodsList);
+//        return "goods_list";
         SpringWebContext ctx = new SpringWebContext(request, response, request.getServletContext(),
                 request.getLocale(), model.asMap(), applicationContext);
         // Render manually
@@ -70,10 +76,10 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping(value = "/to_detail/{goodsId}", produces = "text/html")
+    @RequestMapping(value = "/to_detail2/{goodsId}", produces = "text/html")
     @ResponseBody
-    public String detail(HttpServletRequest request, HttpServletResponse response, Model model, SnapupUser user,
-                         @PathVariable("goodsId") long goodsId) {
+    public String detail2(HttpServletRequest request, HttpServletResponse response, Model model, SnapupUser user,
+                          @PathVariable("goodsId") long goodsId) {
         model.addAttribute("user", user);
         // Get cache
         String html = redisService.get(GoodsKey.getGoodsDetail, "" + goodsId, String.class);
@@ -115,5 +121,33 @@ public class GoodsController {
             redisService.set(GoodsKey.getGoodsDetail, "" + goodsId, html);
         }
         return html;
+    }
+
+    @RequestMapping(value = "/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(HttpServletRequest request, HttpServletResponse response, Model model, SnapupUser user,
+                                        @PathVariable("goodsId") long goodsId) {
+        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+        long startAt = goods.getStartDate().getTime();
+        long endAt = goods.getEndDate().getTime();
+        long now = System.currentTimeMillis();
+        int snapupStatus = 0;
+        int remainSeconds = 0;
+        if (now < startAt) {// Snap-up has not started. Countdown
+            snapupStatus = 0;
+            remainSeconds = (int) (startAt - now) / 1000;
+        } else if (now > endAt) { // Snap-up has ended.
+            snapupStatus = 2;
+            remainSeconds = -1;
+        } else { // Snapping up!
+            snapupStatus = 1;
+            remainSeconds = 0;
+        }
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoods(goods);
+        vo.setUser(user);
+        vo.setRemainSeconds(remainSeconds);
+        vo.setSnapupStatus(snapupStatus);
+        return Result.success(vo);
     }
 }

@@ -40,7 +40,7 @@
             <td th:text="'£'+${goods.goodsPrice}"></td>
             <td th:text="'£'+${goods.snapupPrice}"></td>
             <td th:text="${goods.stockCount}"></td>
-            <td><a th:href="'/goods/to_detail/'+${goods.id}">See Details</a></td>
+            <td><a th:href="'/goods__detail.htm?goodsId='+${goods.id}">See Details</a></td>
         </tr>
     </table>
 </div>

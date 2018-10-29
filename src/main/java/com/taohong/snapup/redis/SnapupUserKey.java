@@ -11,4 +11,6 @@ public class SnapupUserKey extends BasePrefix {
     }
 
     public static SnapupUserKey token = new SnapupUserKey(TOKEN_EXPIRE, "tk");
+    public static SnapupUserKey getById = new SnapupUserKey(0, "id");
+
 }

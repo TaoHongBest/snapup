@@ -31,8 +31,37 @@ public class SnapupUserService {
     RedisService redisService;
 
     public SnapupUser getById(long id) {
-        return snapupUserDao.getById(id);
+        // Get cache
+        SnapupUser user = redisService.get(SnapupUserKey.getById, "" + id, SnapupUser.class);
+        if (user != null) {
+            return user;
+        }
+        // Retrieve database
+        user = snapupUserDao.getById(id);
+        if (user != null) {
+            redisService.set(SnapupUserKey.getById, "" + id, user); // Cache user into database. No need to retrieve database again.
+        }
+        return user;
     }
+
+    public boolean updatePassword(String token, long id, String formPass) {
+        // Get user
+        SnapupUser user = getById(id);
+        if (user == null) {
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+        }
+        // Update database
+        SnapupUser toBeUpdate = new SnapupUser();
+        toBeUpdate.setId(id);
+        toBeUpdate.setPassword(MD5Util.formPassToDBPass(formPass, user.getSalt()));
+        snapupUserDao.update(toBeUpdate);
+        // Process cache
+        redisService.delete(SnapupUserKey.getById, "" + id);
+        user.setPassword(toBeUpdate.getPassword());
+        redisService.set(SnapupUserKey.token, token, user);
+        return true;
+    }
+
 
     public SnapupUser getByToken(HttpServletResponse response, String token) {
         if (StringUtils.isEmpty(token)) {

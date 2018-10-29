@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Order Details</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+
+    <!--jquery-->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!--bootstrap-->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!--jquery-validation-->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>
+    <!--layer-->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!--md5.js-->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!--common.js-->
+    <script type="text/javascript" src="/js/common.js"></script>
+
+</head>
+
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">Order Details</div>
+    <table class="table" id="goodsList">
+        <tr>
+            <td>Item Name</td>
+            <td colspan="3" id="goodsName"></td>
+        </tr>
+        <tr>
+            <td>Item Image</td>
+            <td colspan="2"><img id="goodsImg" width="200" height="200"/></td>
+        </tr>
+        <tr>
+            <td>Order Price</td>
+            <td colspan="2" id="orderPrice"></td>
+        </tr>
+        <tr>
+            <td>Order Creation Time</td>
+            <td colspan="2" id="createDate"></td>
+        </tr>
+        <tr>
+            <td>Order Status</td>
+            <td id="orderStatus">
+                <!--<span if="${orderInfo.status eq 0}">Unpaid</span>-->
+                <!--<span if="${orderInfo.status eq 1}">Paid</span>-->
+                <!--<span if="${orderInfo.status eq 2}">Dispatched</span>-->
+                <!--<span if="${orderInfo.status eq 3}">Received</span>-->
+                <!--<span if="${orderInfo.status eq 4}">Refunded</span>-->
+                <!--<span if="${orderInfo.status eq 5}">Finished</span>-->
+            </td>
+            <td>
+                <button class="btn btn-primary btn-block" type="submit" id="payButton">Pay Now</button>
+            </td>
+        </tr>
+        <tr>
+            <td>Customer</td>
+            <td colspan="2">+86 18912341234</td>
+        </tr>
+        <tr>
+            <td>Delivery Address</td>
+            <td colspan="2">374 Queenstown Road, SW8 4PJ</td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
