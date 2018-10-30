@@ -25,6 +25,6 @@ public interface GoodsDao {
             "where g.id=#{goodsId}")
     GoodsVo getGoodsVoByGoodsId(@Param("goodsId") long goodsId);
 
-    @Update("update snapup_goods set stock_count=stock_count-1 where goods_id=#{goodsId}")
+    @Update("update snapup_goods set stock_count=stock_count-1 where goods_id=#{goodsId} and stock_count>0")
     int reduceStock(SnapupGoods g);
 }

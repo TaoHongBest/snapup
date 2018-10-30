@@ -4,6 +4,8 @@ import com.taohong.snapup.dao.OrderDao;
 import com.taohong.snapup.domain.OrderInfo;
 import com.taohong.snapup.domain.SnapupOrder;
 import com.taohong.snapup.domain.SnapupUser;
+import com.taohong.snapup.redis.OrderKey;
+import com.taohong.snapup.redis.RedisService;
 import com.taohong.snapup.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,12 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
+    @Autowired
+    RedisService redisService;
+
     public SnapupOrder getSnapupOrderByUserIdGoodsId(long userId, long goodsId) {
-        return orderDao.getSnapupOrderByUserIdGoodsId(userId, goodsId);
+//        return orderDao.getSnapupOrderByUserIdGoodsId(userId, goodsId);
+        return redisService.get(OrderKey.getSnapupOrderByUidGid, "" + userId + "_" + goodsId, SnapupOrder.class);
     }
 
     public OrderInfo getOrderById(long orderId) {
@@ -46,6 +52,8 @@ public class OrderService {
         snapupOrder.setUserId(user.getId());
 
         orderDao.insertSnapupOrder(snapupOrder);
+
+        redisService.set(OrderKey.getSnapupOrderByUidGid, "" + user.getId() + "_" + goods.getId(), snapupOrder);
         return orderInfo;
     }
 
