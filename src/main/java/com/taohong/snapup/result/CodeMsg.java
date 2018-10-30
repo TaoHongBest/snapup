@@ -22,6 +22,7 @@ public class CodeMsg {
     // Item errors 5003XX
 
     // Order errors 5004XX
+    public static CodeMsg ORDER_NOT_EXIST = new CodeMsg(500400, "order does not exist");
 
     // Snapup errors 5005XX
     public static CodeMsg SNAPUP_OVER = new CodeMsg(500500, "snap-up is over");

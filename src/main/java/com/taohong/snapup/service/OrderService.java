@@ -23,6 +23,10 @@ public class OrderService {
         return orderDao.getSnapupOrderByUserIdGoodsId(userId, goodsId);
     }
 
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
+    }
+
     @Transactional
     public OrderInfo createOrder(SnapupUser user, GoodsVo goods) {
         OrderInfo orderInfo = new OrderInfo();
@@ -44,4 +48,6 @@ public class OrderService {
         orderDao.insertSnapupOrder(snapupOrder);
         return orderInfo;
     }
+
+
 }
