@@ -29,12 +29,33 @@ public class SampleController {
     @Autowired
     MQSender sender;
 
-    @RequestMapping("/mq")
-    @ResponseBody
-    public Result<String> mq() {
-        sender.send("Hello from mq");
-        return Result.success("Hello，world");
-    }
+//    @RequestMapping("/mq/header")
+//    @ResponseBody
+//    public Result<String> header() {
+//        sender.sendHeader("Hello from header");
+//        return Result.success("Hello，world");
+//    }
+//
+//    @RequestMapping("/mq/fanout")
+//    @ResponseBody
+//    public Result<String> fanout() {
+//        sender.sendFanout("Hello from fanout");
+//        return Result.success("Hello，world");
+//    }
+//
+//    @RequestMapping("/mq/topic")
+//    @ResponseBody
+//    public Result<String> topic() {
+//        sender.sendTopic("Hello from topic");
+//        return Result.success("Hello，world");
+//    }
+//
+//    @RequestMapping("/mq")
+//    @ResponseBody
+//    public Result<String> mq() {
+//        sender.send("Hello from mq");
+//        return Result.success("Hello，world");
+//    }
 
     @RequestMapping("/hello")
     @ResponseBody
@@ -85,6 +106,4 @@ public class SampleController {
         redisService.set(UserKey.getById, "" + 1, user);//UserKey:id1
         return Result.success(true);
     }
-
-
 }

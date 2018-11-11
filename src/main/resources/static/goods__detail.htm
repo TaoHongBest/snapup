@@ -71,6 +71,42 @@
 </body>
 
 <script>
+    function getSnapupResult(goodsId) {
+        g_showLoading();
+        $.ajax({
+            url: "/snapup/result",
+            type: "GET",
+            data: {
+                goodsId: $("#goodsId").val(),
+            },
+            success: function (data) {
+                if (data.code === 0) {
+                    var result = data.data;
+                    if (result < 0) {
+                        layer.msg("Sorry, snap-up failed")
+                    } else if (result == 0) { // Continue Round Robin
+                        setTimeout(function () {
+                            getSnapupResult(goodsId);
+                        }, 50);
+                    } else {
+                        layer.confirm("Congratulations! Snap-up success! View order?", {btn: ["Yes", "Cancel"]},
+                            function () {
+                                window.location.href = "/order_detail.htm?orderId=" + result;
+                            },
+                            function () {
+                                layer.closeAll();
+                            });
+                    }
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("Client Incorrect Request");
+            }
+        });
+    }
+
     function doSnapup() {
         $.ajax({
             url: "/snapup/do_snapup",
@@ -80,7 +116,8 @@
             },
             success: function (data) {
                 if (data.code === 0) {
-                    window.location.href = "/order_detail.htm?orderId=" + data.data.id;
+                    // window.location.href = "/order_detail.htm?orderId=" + data.data.id;
+                    getSnapupResult($("#goodsId").val());
                 } else {
                     layer.msg(data.msg);
                 }

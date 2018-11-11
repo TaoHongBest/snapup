@@ -34,7 +34,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderInfo createOrder(SnapupUser user, GoodsVo goods) {
+    public OrderInfo  createOrder(SnapupUser user, GoodsVo goods) {
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setCreateDate(new Date());
         orderInfo.setDeliveryAddrId(0L);
@@ -45,12 +45,12 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(user.getId());
-        long orderId = orderDao.insert(orderInfo);
+        orderDao.insert(orderInfo);
+
         SnapupOrder snapupOrder = new SnapupOrder();
         snapupOrder.setGoodsId(goods.getId());
-        snapupOrder.setOrderId(orderId);
+        snapupOrder.setOrderId(orderInfo.getId());
         snapupOrder.setUserId(user.getId());
-
         orderDao.insertSnapupOrder(snapupOrder);
 
         redisService.set(OrderKey.getSnapupOrderByUidGid, "" + user.getId() + "_" + goods.getId(), snapupOrder);
