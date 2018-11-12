@@ -62,4 +62,9 @@ public class SnapupService {
     private boolean getGoodsOver(long goodsId) {
         return redisService.exists(SnapupKey.isGoodsOver, "" + goodsId);
     }
+
+    public void reset(List<GoodsVo> goodsList) {
+        goodsService.resetStock(goodsList);
+        orderService.deleteOrders();
+    }
 }

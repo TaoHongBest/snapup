@@ -34,7 +34,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderInfo  createOrder(SnapupUser user, GoodsVo goods) {
+    public OrderInfo createOrder(SnapupUser user, GoodsVo goods) {
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setCreateDate(new Date());
         orderInfo.setDeliveryAddrId(0L);
@@ -58,4 +58,8 @@ public class OrderService {
     }
 
 
+    public void deleteOrders() {
+        orderDao.deleteOrders();
+        orderDao.deleteSnapupOrders();
+    }
 }

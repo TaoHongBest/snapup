@@ -6,7 +6,9 @@ import com.taohong.snapup.domain.SnapupUser;
 import com.taohong.snapup.rabbitmq.MQSender;
 import com.taohong.snapup.rabbitmq.SnapupMessage;
 import com.taohong.snapup.redis.GoodsKey;
+import com.taohong.snapup.redis.OrderKey;
 import com.taohong.snapup.redis.RedisService;
+import com.taohong.snapup.redis.SnapupKey;
 import com.taohong.snapup.result.CodeMsg;
 import com.taohong.snapup.result.Result;
 import com.taohong.snapup.service.GoodsService;
@@ -20,7 +22,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author taohong on 09/10/2018
@@ -47,6 +51,8 @@ public class SnapupController implements InitializingBean {
     @Autowired
     MQSender sender;
 
+    private Map<Long, Boolean> localOverMap = new HashMap<Long, Boolean>();
+
     @Override
     public void afterPropertiesSet() throws Exception {
         List<GoodsVo> goodsList = goodsService.listGoodsVo();
@@ -55,13 +61,31 @@ public class SnapupController implements InitializingBean {
         }
         for (GoodsVo goods : goodsList) {
             redisService.set(GoodsKey.getSnapupGoodsStock, "" + goods.getId(), goods.getStockCount());
+            localOverMap.put(goods.getId(), false);
         }
-
     }
+
+    @RequestMapping(value = "/reset", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<Boolean> reset(Model model) {
+        List<GoodsVo> goodsList = goodsService.listGoodsVo();
+        for (GoodsVo goods : goodsList) {
+            goods.setStockCount(10);
+            redisService.set(GoodsKey.getSnapupGoodsStock, "" + goods.getId(), 10);
+            localOverMap.put(goods.getId(), false);
+        }
+        redisService.delete(OrderKey.getSnapupOrderByUidGid);
+        redisService.delete(SnapupKey.isGoodsOver);
+        snapupService.reset(goodsList);
+        return Result.success(true);
+    }
+
 
     /**
      * 351 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (order created & no exception)
      * 3000 * 10
+     * <p>
+     * 599 QPS after rabbitmq optimization
      */
     @RequestMapping(value = "/do_snapup", method = RequestMethod.POST)
     @ResponseBody
@@ -71,9 +95,16 @@ public class SnapupController implements InitializingBean {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
 
+        // Memory mark, reducing times to access redis
+        boolean over = localOverMap.get(goodsId);
+        if (over) {
+            return Result.error(CodeMsg.SNAPUP_OVER);
+        }
+
         // Pre-reduce stock
         long stock = redisService.decr(GoodsKey.getSnapupGoodsStock, "" + goodsId);
         if (stock < 0) {
+            localOverMap.put(goodsId, true);
             return Result.error(CodeMsg.SNAPUP_OVER);
         }
 
