@@ -11,6 +11,7 @@ public class CodeMsg {
     public static CodeMsg SUCCESS = new CodeMsg(0, "success");
     public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "server error");
     public static CodeMsg BIND_ERROR = new CodeMsg(500101, "parameter validation error: %s");
+    public static CodeMsg REQUEST_ILLEGAL = new CodeMsg(500102, "illegal request");
     // Login errors 5002XX
     public static CodeMsg SESSION_ERROR = new CodeMsg(500210, "Session does not exit or no longer valid");
     public static CodeMsg PASSWORD_EMPTY = new CodeMsg(500211, "password cannot be empty");

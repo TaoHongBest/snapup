@@ -48,10 +48,10 @@
                 <!--<button class="btn btn-primary btn-block" type="submit" id="buyButton">Order Now</button>-->
                 <!--<input type="hidden" name="goodsId" id="goodsId"/>-->
                 <!--</form>-->
-                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="doSnapup()">Order
-                        Now
-                    </button>
-                    <input type="hidden" name="goodsId" id="goodsId"/>
+                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="getSnapupPath()">Order
+                    Now
+                </button>
+                <input type="hidden" name="goodsId" id="goodsId"/>
             </td>
         </tr>
         <tr>
@@ -71,6 +71,29 @@
 </body>
 
 <script>
+    function getSnapupPath() {
+        var goodsId = $("#goodsId").val();
+        g_showLoading();
+        $.ajax({
+            url: "/snapup/path",
+            type: "GET",
+            data: {
+                goodsId: goodsId,
+            },
+            success: function (data) {
+                if (data.code === 0) {
+                    var path = data.data;
+                    doSnapup(path);
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+                layer.msg("Client Incorrect Request");
+            }
+        });
+    }
+
     function getSnapupResult(goodsId) {
         g_showLoading();
         $.ajax({
@@ -87,7 +110,7 @@
                     } else if (result == 0) { // Continue Round Robin
                         setTimeout(function () {
                             getSnapupResult(goodsId);
-                        }, 50);
+                        }, 200); // Avoid high pressure on server
                     } else {
                         layer.confirm("Congratulations! Snap-up success! View order?", {btn: ["Yes", "Cancel"]},
                             function () {
@@ -107,9 +130,9 @@
         });
     }
 
-    function doSnapup() {
+    function doSnapup(path) {
         $.ajax({
-            url: "/snapup/do_snapup",
+            url: "/snapup/" + path + "/do_snapup",
             type: "POST",
             data: {
                 goodsId: $("#goodsId").val(),

@@ -15,6 +15,8 @@ import com.taohong.snapup.service.GoodsService;
 import com.taohong.snapup.service.OrderService;
 import com.taohong.snapup.service.SnapupService;
 import com.taohong.snapup.service.SnapupUserService;
+import com.taohong.snapup.util.MD5Util;
+import com.taohong.snapup.util.UUIDUtil;
 import com.taohong.snapup.vo.GoodsVo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,14 +89,21 @@ public class SnapupController implements InitializingBean {
      * <p>
      * 599 QPS after rabbitmq optimization
      */
-    @RequestMapping(value = "/do_snapup", method = RequestMethod.POST)
+    @RequestMapping(value = "/{path}/do_snapup", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> snapup(Model model, SnapupUser user, @RequestParam("goodsId") long goodsId) {
+    public Result<Integer> snapup(Model model, SnapupUser user,
+                                  @RequestParam("goodsId") long goodsId,
+                                  @PathVariable("path") String path) {
         model.addAttribute("user", user);
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        // Validate path
+        boolean check = snapupService.checkPath(user, goodsId, path);
+        if (!check) {
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
 
+        }
         // Memory mark, reducing times to access redis
         boolean over = localOverMap.get(goodsId);
         if (over) {
@@ -154,5 +163,16 @@ public class SnapupController implements InitializingBean {
         }
         long result = snapupService.getSnapupResult(user.getId(), goodsId);
         return Result.success(result);
+    }
+
+    @RequestMapping(value = "/path", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getSnapupPath(Model model, SnapupUser user, @RequestParam("goodsId") long goodsId) {
+        model.addAttribute("user", user);
+        if (user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        String path = snapupService.createSnapupPath(user, goodsId);
+        return Result.success(path);
     }
 }

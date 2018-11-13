@@ -6,6 +6,8 @@ import com.taohong.snapup.domain.SnapupOrder;
 import com.taohong.snapup.domain.SnapupUser;
 import com.taohong.snapup.redis.RedisService;
 import com.taohong.snapup.redis.SnapupKey;
+import com.taohong.snapup.util.MD5Util;
+import com.taohong.snapup.util.UUIDUtil;
 import com.taohong.snapup.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,5 +68,20 @@ public class SnapupService {
     public void reset(List<GoodsVo> goodsList) {
         goodsService.resetStock(goodsList);
         orderService.deleteOrders();
+    }
+
+    public boolean checkPath(SnapupUser user, long goodsId, String path) {
+        if (user == null || path == null) {
+            return false;
+        }
+        String pathOld = redisService.get(SnapupKey.getSnapupPath, "" + user.getId() + "_" + goodsId, String.class);
+        return path.equals(pathOld);
+
+    }
+
+    public String createSnapupPath(SnapupUser user, long goodsId) {
+        String str = MD5Util.md5(UUIDUtil.uuid() + "123456");
+        redisService.set(SnapupKey.getSnapupPath, "" + user.getId() + "_" + goodsId, str);
+        return str;
     }
 }
