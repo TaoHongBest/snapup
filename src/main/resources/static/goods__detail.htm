@@ -48,9 +48,16 @@
                 <!--<button class="btn btn-primary btn-block" type="submit" id="buyButton">Order Now</button>-->
                 <!--<input type="hidden" name="goodsId" id="goodsId"/>-->
                 <!--</form>-->
-                <button class="btn btn-primary btn-block" type="button" id="buyButton" onclick="getSnapupPath()">Order
-                    Now
-                </button>
+                <div class="row">
+                    <div class="form-inline">
+                        <img id="verifyCodeImg" width="95" height="32" style="display:none"
+                             onclick="refreshVerifyCode()"/>
+                        <input id="verifyCode" class="form-control"/>
+                        <button class="btn btn-primary" type="button" id="buyButton" onclick="getSnapupPath()">Order
+                            Now
+                        </button>
+                    </div>
+                </div>
                 <input type="hidden" name="goodsId" id="goodsId"/>
             </td>
         </tr>
@@ -79,19 +86,22 @@
             type: "GET",
             data: {
                 goodsId: goodsId,
-            },
-            success: function (data) {
-                if (data.code === 0) {
-                    var path = data.data;
-                    doSnapup(path);
-                } else {
-                    layer.msg(data.msg);
-                }
-            },
-            error: function () {
-                layer.msg("Client Incorrect Request");
+                verifyCode: $("#verifyCode").val()
+    },
+        success: function (data) {
+            if (data.code === 0) {
+                var path = data.data;
+                doSnapup(path);
+            } else {
+                layer.msg(data.msg);
             }
-        });
+        }
+    ,
+        error: function () {
+            layer.msg("Client Incorrect Request");
+        }
+    })
+        ;
     }
 
     function getSnapupResult(goodsId) {
@@ -164,8 +174,8 @@
         $("#startTime").text(new Date(goods.startDate).format("yyyy-MM-dd hh:mm:ss"));
         $("#remainSeconds").val(remainSeconds);
         $("#goodsId").val(goods.id);
-        $("#goodsPrice").text(goods.goodsPrice);
-        $("#goodsPrice").text(goods.snapupPrice);
+        $("#goodsPrice").text('£' + goods.goodsPrice);
+        $("#snapupPrice").text('£' + goods.snapupPrice);
         $("#stockCount").text(goods.stockCount);
         countDown();
     }
@@ -212,11 +222,19 @@
                 clearTimeout(timeout);
             }
             $("#snapupTip").html("Snapping-up has started!");
+            $("#verifyCodeImg").attr("src", "/snapup/verifyCode?goodsId=" + $("#goodsId").val());
+            $("#verifyCodeImg").show();
+            $("verifyCode").show();
         } else {
             $("#buyButton").attr("disabled", true);
             $("#snapupTip").html("Snap-up has ended");
+            $("#verifyCodeImg").hide();
+            $("verifyCode").hide();
         }
     }
 
+    function refreshVerifyCode() {
+        $("#verifyCodeImg").attr("src", "/snapup/verifyCode?goodsId=" + $("#goodsId").val() + "&timeStamp=" + new Date().getTime());
+    }
 </script>
 </html>

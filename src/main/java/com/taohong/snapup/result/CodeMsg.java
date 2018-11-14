@@ -28,6 +28,7 @@ public class CodeMsg {
     // Snapup errors 5005XX
     public static CodeMsg SNAPUP_OVER = new CodeMsg(500500, "snap-up is over");
     public static CodeMsg REPEAT_SNAPUP = new CodeMsg(500501, "cannot repeat snap up one item");
+    public static CodeMsg SNAPUP_FAIL = new CodeMsg(500502, "Snap-up failed");
 
 
     private CodeMsg(int code, String msg) {

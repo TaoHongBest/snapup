@@ -1,6 +1,5 @@
 package com.taohong.snapup.controller;
 
-import com.taohong.snapup.domain.OrderInfo;
 import com.taohong.snapup.domain.SnapupOrder;
 import com.taohong.snapup.domain.SnapupUser;
 import com.taohong.snapup.rabbitmq.MQSender;
@@ -15,8 +14,6 @@ import com.taohong.snapup.service.GoodsService;
 import com.taohong.snapup.service.OrderService;
 import com.taohong.snapup.service.SnapupService;
 import com.taohong.snapup.service.SnapupUserService;
-import com.taohong.snapup.util.MD5Util;
-import com.taohong.snapup.util.UUIDUtil;
 import com.taohong.snapup.vo.GoodsVo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,12 +168,36 @@ public class SnapupController implements InitializingBean {
 
     @RequestMapping(value = "/path", method = RequestMethod.GET)
     @ResponseBody
-    public Result<String> getSnapupPath(Model model, SnapupUser user, @RequestParam("goodsId") long goodsId) {
+    public Result<String> getSnapupPath(Model model, SnapupUser user, @RequestParam("goodsId") long goodsId, @RequestParam("verifyCode") int verifyCode) {
         model.addAttribute("user", user);
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+        //
+        boolean check = snapupService.checkVerifyCode(user, goodsId, verifyCode);
+        if (!check) {
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
+        }
         String path = snapupService.createSnapupPath(user, goodsId);
         return Result.success(path);
+    }
+
+    @RequestMapping(value = "/verifyCode", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getSnapupVerifyCode(HttpServletResponse response, SnapupUser user, @RequestParam("goodsId") long goodsId) {
+        if (user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        BufferedImage image = snapupService.createVerifyCode(user, goodsId);
+        try {
+            OutputStream out = response.getOutputStream();
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.SNAPUP_FAIL);
+        }
     }
 }

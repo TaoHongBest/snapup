@@ -10,5 +10,6 @@ public class SnapupKey extends BasePrefix {
 
     public static SnapupKey isGoodsOver = new SnapupKey(0, "go");
     public static SnapupKey getSnapupPath = new SnapupKey(60, "sp");
+    public static SnapupKey getSnapupVerifyCode = new SnapupKey(300, "vc");
 
 }
