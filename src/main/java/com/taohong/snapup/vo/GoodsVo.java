@@ -5,7 +5,7 @@ import com.taohong.snapup.domain.Goods;
 import java.util.Date;
 
 /**
- * @author taohong on 23/10/2018
+ * @author taohong on 26/11/2018
  */
 public class GoodsVo extends Goods {
     private Double snapupPrice;

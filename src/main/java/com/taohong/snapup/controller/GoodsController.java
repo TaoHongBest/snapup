@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * @author taohong on 09/10/2018
+ * @author taohong on 25/11/2018
  */
 @Controller
 @RequestMapping("/goods")

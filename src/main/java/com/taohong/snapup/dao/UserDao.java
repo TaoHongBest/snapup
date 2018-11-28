@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
- * @author taohong on 10/10/2018
+ * @author taohong on 25/11/2018
  */
 @Mapper
 public interface UserDao {

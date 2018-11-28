@@ -3,7 +3,7 @@ package com.taohong.snapup.vo;
 import com.taohong.snapup.domain.OrderInfo;
 
 /**
- * @author taohong on 29/10/2018
+ * @author taohong on 26/11/2018
  */
 public class OrderDetailVo {
     private GoodsVo goods;

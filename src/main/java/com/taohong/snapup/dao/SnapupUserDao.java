@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * @author taohong on 22/10/2018
+ * @author taohong on 26/11/2018
  */
 @Mapper
 public interface SnapupUserDao {

@@ -3,7 +3,7 @@ package com.taohong.snapup.vo;
 import com.taohong.snapup.domain.SnapupUser;
 
 /**
- * @author taohong on 25/10/2018
+ * @author taohong on 26/11/2018
  */
 public class GoodsDetailVo {
     private int snapupStatus = 0;

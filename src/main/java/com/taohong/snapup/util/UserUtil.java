@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.taohong.snapup.domain.SnapupUser;
 
 /**
- * @author joshua
+ * @author taohong on 19/10/2018
  */
 public class UserUtil {
 

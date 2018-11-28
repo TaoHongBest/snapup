@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.util.Properties;
 
 /**
- * @author joshua
+ * @author taohong on 19/10/2018
  */
 public class DBUtil {
     private static Properties props;

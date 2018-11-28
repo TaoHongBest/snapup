@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 /**
- * @author taohong on 10/10/2018
+ * @author taohong on 25/11/2018
  */
 @Mapper
 public interface GoodsDao {
