@@ -87,7 +87,7 @@ public class SnapupController implements InitializingBean {
      * 351 QPS at HEAP:="-Xms2048m -Xmx2048m -Xss256k" (order created & no exception)
      * 3000 * 10
      * <p>
-     * 599 QPS after rabbitmq optimization
+     * 599 QPS after optimization
      */
     @RequestMapping(value = "/{path}/do_snapup", method = RequestMethod.POST)
     @ResponseBody
@@ -169,7 +169,7 @@ public class SnapupController implements InitializingBean {
     @ResponseBody
     public Result<String> getSnapupPath(HttpServletRequest request, SnapupUser user,
                                         @RequestParam("goodsId") long goodsId,
-                                        @RequestParam(value = "verifyCode", defaultValue = "0") int verifyCode) {
+                                        @RequestParam(value = "verifyCode", defaultValue = "810") int verifyCode) {
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }

@@ -87,20 +87,20 @@
             data: {
                 goodsId: goodsId,
                 verifyCode: $("#verifyCode").val()
-    },
-        success: function (data) {
-            if (data.code === 0) {
-                var path = data.data;
-                doSnapup(path);
-            } else {
-                layer.msg(data.msg);
+            },
+            success: function (data) {
+                if (data.code === 0) {
+                    var path = data.data;
+                    doSnapup(path);
+                } else {
+                    layer.msg(data.msg);
+                }
             }
-        }
-    ,
-        error: function () {
-            layer.msg("Client Incorrect Request");
-        }
-    })
+            ,
+            error: function () {
+                layer.msg("Client Incorrect Request");
+            }
+        })
         ;
     }
 

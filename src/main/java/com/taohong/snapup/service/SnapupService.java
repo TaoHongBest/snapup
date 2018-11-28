@@ -140,6 +140,10 @@ public class SnapupService {
         return true;
     }
 
+//    public static void main(String[] args) {
+//        System.out.println(calc("0*5*8"));
+//    }
+
     private static int calc(String exp) {
         try {
             ScriptEngineManager manager = new ScriptEngineManager();
